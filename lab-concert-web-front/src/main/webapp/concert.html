@@ -27,8 +27,8 @@
             function loadConcerts(){
                 $('#concertList').html(''); // Clear concert list
                 $.ajax({
-                    type: '', //TODO: add type
-                    url: '', //TODO: add url
+                    type: 'GET', //TODO: add type
+                    url: 'http://localhost:8081/concerts', //TODO: add url
                     success: function(response) {
                         console.log('Concerts:', response);
                         response.forEach(function(concert) {
@@ -57,17 +57,19 @@
                 var concertData = {
                     title: $('#title').val(),
                     //TODO: add more fields and performer
+
                 };
                 
                 //TODO: Send POST request to create concert
                 $.ajax({
-                    type: '', //TODO: add type
-                    url: '', //TODO: add url
+                    type: 'POST', //TODO: add type
+                    url: 'http://localhost:8081/concerts', //TODO: add url
                     data: JSON.stringify(concertData),
                     contentType: 'application/json',
                     success: function(response) {
                         console.log('Concert created successfully:', response);
                         //TODO: reload concert list
+                        loadConcerts();
                     },
                     error: function(error) {
                         console.error('Error creating concert:', error);

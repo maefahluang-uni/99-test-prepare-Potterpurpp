@@ -1,7 +1,7 @@
 package lab.end2end.concert.services;
 
 import java.util.List;
-import java.util.Optional;  
+import java.util.Optional;
 
 import lab.end2end.concert.domain.Concert;
 
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -28,21 +27,19 @@ public class ConcertController {
     @Autowired
     private ConcertRepository concertRepository;
 
-  
-
     // TODO: add @GET and @Path
     @GetMapping("/concerts/{id}")
-    public ResponseEntity<String> retrieveConcert( @PathVariable Long id) { // TODO: add @PathVariable for id 
+    public ResponseEntity<Concert> retrieveConcert(@PathVariable long id) { // TODO: add @PathVariable for id
 
         // TODO: find concert by ID suing em.find(...
-        
+        Optional<Concert> optConcert = concertRepository.findById(id);
+
         // TODO: Handle the case when no entity is found
-       Optional<Concert> optConcert = concertRepository.findById(id);
-        if(!optConcert.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("ID not found");
+        if (!optConcert.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(HttpStatus.CONTINUE);
+        return ResponseEntity.ok(optConcert.get());
 
     }
 
@@ -50,46 +47,51 @@ public class ConcertController {
     @GetMapping("/concerts")
     public ResponseEntity<List<Concert>> retrieveAllConcert() {
         // TODO: get all concert
-        concertRepository.findAll();
-        return new ResponseEntity<>(HttpStatus.CONTINUE);
+        List<Concert> concerts = concertRepository.findAll();
 
+        return ResponseEntity.ok(concerts);
     }
 
     // TODO: add proper annotation Post verb
     @PostMapping("/concerts")
     public ResponseEntity<String> createConcert(@RequestBody Concert concert) { // add @ResponseBody
-        
 
         // TODO save concert to database using repository
         concertRepository.save(concert);
-        return ResponseEntity.status(HttpStatus.CREATED).body("COncert created");
 
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     // TODO: add proper annotation Put verb
-    @PutMapping("concerts/{id}")
-    @ResponseBody
+    @PutMapping("/concerts")
     public ResponseEntity<String> updateConcert(@RequestBody Concert concert) { // add @ResponseBody
 
         // TODO update concert using em.merge(..
+        if (!concertRepository.existsById(concert.getId())) {
+            // return error message
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
         concertRepository.save(concert);
-        return new ResponseEntity<>(HttpStatus.valueOf(200));
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // TODO: add annotation for Delete verb and and @Path for id
-    @DeleteMapping("/concert/{id}")
+    @DeleteMapping("/concerts/{id}")
     public ResponseEntity<String> delete(@PathVariable long id) { // TODO: add @PathVariable for id
 
         // TODO: delete concert using em.remove
-        concertRepository.deleteAll();
 
         // TODO: Return a HTTP 404 response if the specified Concert isn't found.
-        if(!concertRepository.existsById(id)){
-            return new ResponseEntity("Not Found", HttpStatus.NOT_FOUND);
-        }
-        
 
-        return new ResponseEntity<>(HttpStatus.CONTINUE);
+        if (!concertRepository.existsById(id)) {
+            // return error message 404
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        concertRepository.deleteById(id);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
     }
 
@@ -100,6 +102,6 @@ public class ConcertController {
         // TODO: query to get all concerts into a list using guideline in the reference
         concertRepository.deleteAll();
 
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -12,7 +12,7 @@ import javax.persistence.*;
 public class Performer {
     
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
     private String imageUri;

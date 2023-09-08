@@ -7,8 +7,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lab.end2end.concert.jackson.LocalDateTimeDeserializer;
 import lab.end2end.concert.jackson.LocalDateTimeSerializer;
 
-
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -22,14 +20,15 @@ public class Concert {
 	
 	//TODO: add annotation for id
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String title;
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDateTime date;
 
     //TODO: add annotation for relationship
     @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "performer_id", referencedColumnName = "id")
     private Performer performer;
 
     public Concert(Long id, String title, LocalDateTime date, Performer performer) {
@@ -67,6 +66,8 @@ public class Concert {
         this.title = title;
     }
     //TODO: add the JSONSerialze and JsonDeserialize
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     public LocalDateTime getDate() {
         return date;
     }
