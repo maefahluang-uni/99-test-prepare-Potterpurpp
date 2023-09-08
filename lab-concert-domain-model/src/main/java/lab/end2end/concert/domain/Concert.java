@@ -1,5 +1,6 @@
 package lab.end2end.concert.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -16,15 +17,19 @@ import java.time.LocalDateTime;
  * title, date and time, and a featuring Performer.
  */
 //TODO: add annotation for entity
+@Entity
 public class Concert {
 	
 	//TODO: add annotation for id
+    @Id
+    @GeneratedValue
     private Long id;
     private String title;
-
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDateTime date;
 
-  //TODO: add annotation for relationship
+    //TODO: add annotation for relationship
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Performer performer;
 
     public Concert(Long id, String title, LocalDateTime date, Performer performer) {
