@@ -27,7 +27,7 @@ public class Concert {
     private LocalDateTime date;
 
     //TODO: add annotation for relationship
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch=FetchType.EAGER )
     @JoinColumn(name = "performer_id", referencedColumnName = "id")
     private Performer performer;
 

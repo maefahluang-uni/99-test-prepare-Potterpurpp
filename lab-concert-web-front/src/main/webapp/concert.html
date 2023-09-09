@@ -1,95 +1,111 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Create and List Concerts</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <title>Create and List Concerts</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+
 <body>
-    <h1>Create Concert</h1>
-    <form id="createConcertForm">
-        <h3>New Concert</h3>
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="title" required><br><br>
-        <!-- add more fields in this form -->
-        <label for="dateTime">Date:</label>
-        <input type="text" id="dateTime" name="dateTime" required><br><br>
-        <label for="performer-name">Performer name:</label>
-        <input type="text" id="performer-name" name="performer-name" required><br><br>
-        <label for="performer-imageUri">Performer's image URL:</label>
-        <input type="text" id="performer-imageUri" name="performer-imageUri" required><br><br>
-        
-        <button type="submit">Create Concert</button>
-    </form>
-    
-    <hr>
-    
-    <h1>List Concerts</h1>
-    <button id="reloadButton">Reload</button>
-    <div id="concertList"></div>
-    
-    <script>
-        $(document).ready(function() {
-            // Load concerts on 
-            function loadConcerts(){
-                $('#concertList').html(''); // Clear concert list
-                $.ajax({
-                    type: 'GET', //TODO: add type
-                    url: 'http://localhost:8081/concerts', //TODO: add url
-                    success: function(response) {
-                        console.log('Concerts:', response);
-                        response.forEach(function(concert) {
-                            //TODO: add concert details to concertList
-                        });
-                    },
-                    error: function(error) {
-                        console.error('Error loading concerts:', error);
-                    }
-                });
-            }
+  <h1>Create Concert</h1>
+  <form id="createConcertForm">
+    <h3>New Concert</h3>
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" required /><br /><br />
+    <!-- add more fields in this form -->
+    <label for="date">Date:</label>
+    <input type="datetime-local" id="dateTime" name="dateTime" required /><br /><br />
+    <label for="performerName">Performer's Name:</label>
+    <input type="text" id="performer-name" name="performer-name" required /><br /><br />
+    <label for="performerImageUri">Performer's Image URL:</label>
+    <input type="text" id="performerImageUri" name="performerImageUri" required /><br /><br />
+    <button type="submit">Create Concert</button>
+  </form>
 
-            // Load concerts on page load
-            loadConcerts();
-            
-            // Reload button click event
-            $('#reloadButton').click(function() {
-                loadConcerts();
+  <hr />
+
+  <h1>List Concerts</h1>
+  <button id="reloadButton">Reload</button>
+  <div id="concertList"></div>
+
+  <script>
+    $(document).ready(function () {
+      // Load concerts on
+      function loadConcerts() {
+        $("#concertList").html(""); // Clear concert list
+        $.ajax({
+          type: "GET", //TODO: add type
+          url: "http://localhost:8080/concerts", //TODO: add url
+          success: function (response) {
+            console.log("Concerts:", response);
+            response.forEach(function (concert) {
+              //TODO: add concert details to concertList
+              $("#concertList").append(
+                "<p>Title: " +
+                concert.title +
+                ", Date: " +
+                concert.date +
+                ", Performer: " +
+                concert.performer.name +
+                ", ImageUri: "+
+                concert.performer.imageUri+
+                "</p>"
+              );
             });
-
-            // Handle form submission
-            $('#createConcertForm').submit(function(event) {
-                event.preventDefault(); // Prevent default form submission
-                
-                // Prepare concert data as JSON
-                var concertData = {
-                    title: $('#title').val(),
-                    //TODO: add more fields and performer
-                    date: $('#dateTime').val()
-
-                };
-                
-                //TODO: Send POST request to create concert
-                $.ajax({
-                    type: 'POST', //TODO: add type
-                    url: 'http://localhost:8081/concerts', //TODO: add url
-                    data: JSON.stringify(concertData),
-                    contentType: 'application/json',
-                    success: function(response) {
-                        console.log('Concert created successfully:', response);
-                        //TODO: reload concert list
-                        loadConcerts();
-                    },
-                    error: function(error) {
-                        console.error('Error creating concert:', error);
-                    }
-                });
-                
-                // Reset form fields
-                $('#title').val('');
-                $('#dateTime').val('');
-                $('#performer-name').val('');
-                $('#performer-imageUri').val('');
-            }); //end submit function
+          },
+          error: function (error) {
+            console.error("Error loading concerts:", error);
+          },
         });
-    </script>
+      }
+
+      // Load concerts on page load
+      loadConcerts();
+
+      // Reload button click event
+      $("#reloadButton").click(function () {
+        loadConcerts();
+      });
+
+      // Handle form submission
+      $("#createConcertForm").submit(function (event) {
+        event.preventDefault(); // Prevent default form submission
+
+        // Prepare concert data as JSON
+        var concertData = {
+          title: $("#title").val(),
+          //TODO: add more fields and performer
+          date: $("#dateTime").val(),
+          performer: {
+            name: $("#performer-name").val(),
+            imageUri: $("#performer-imageUri").val(),
+          },
+        };
+
+        //TODO: Send POST request to create concert
+        $.ajax({
+          type: "POST", //TODO: add type
+          url: "http://localhost:8080/concerts", //TODO: add url
+          data: JSON.stringify(concertData),
+          contentType: "application/json",
+          success: function (response) {
+            console.log("Concert created successfully:", response);
+            //TODO: reload concert list
+            loadConcerts();
+          },
+          error: function (error) {
+            console.error("Error creating concert:", error);
+          },
+        });
+
+        // Reset form fields
+        $("#title").val("");
+        $("#dateTime").val("");
+        $("#performer-name").val("");
+        $("#performer-imageUri").val("");
+      }); //end submit function
+    });
+  </script>
 </body>
+
 </html>
